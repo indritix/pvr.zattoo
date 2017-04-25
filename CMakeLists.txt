@@ -3,8 +3,6 @@ project(pvr.zattoo)
 cmake_minimum_required(VERSION 2.8.12)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
-set(ADDONS_PREFER_STATIC_LIBS ON)
-
 enable_language(CXX)
 
 find_package(Kodi REQUIRED)
@@ -18,12 +16,14 @@ include_directories(${CURL_INCLUDE_DIR}
                     ${p8-platform_INCLUDE_DIRS}
                     ${KODI_INCLUDE_DIR}
                     ${YAJL_INCLUDE_DIR}
+                    ${CURL_INCLUDE_DIRS}
                     ${PROJECT_SOURCE_DIR}/lib)
 
 set(DEPLIBS ${CURL_LIBRARIES}
 		${kodiplatform_LIBRARIES} 
             ${p8-platform_LIBRARIES}
             ${YAJL_LIBRARIES}
+            ${CURL_LIBRARIES}
 )
 
 set(ZATTOO_SOURCES
@@ -31,10 +31,10 @@ set(ZATTOO_SOURCES
 		lib/tinyxml2/tinyxml2.cpp
 		src/Utils.cpp
 		src/client.cpp
+		src/Curl.cpp
 		src/ZatData.cpp
 		src/JsonParser.cpp
 		src/UpdateThread.cpp
-		src/HTTPSocket.cpp
 		src/categories.cpp
 		 )
 
