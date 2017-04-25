@@ -230,7 +230,7 @@ string ZatData::generateUUID() {
 }
 
 bool ZatData::loadAppId() {
-  string html = HttpGet("http://zattoo.com", true);
+  string html = HttpGet("https://zattoo.com", true);
   appToken = "";
   //There seems to be a problem with old gcc and osx with regex. Do it the dirty way:
   int basePos = html.find("window.appToken = '") + 19;
@@ -254,7 +254,7 @@ bool ZatData::sendHello(string uuid) {
   ostringstream dataStream;
   dataStream << "uuid=" << uuid << "&lang=en&format=json&client_app_token=" << appToken;
 
-  string jsonString = HttpPost("http://zattoo.com/zapi/session/hello", dataStream.str(), true);
+  string jsonString = HttpPost("https://zattoo.com/zapi/session/hello", dataStream.str(), true);
 
   yajl_val json = JsonParser::parse(jsonString);
 
@@ -274,7 +274,7 @@ bool ZatData::login() {
 
   ostringstream dataStream;
   dataStream << "login=" << Utils::UrlEncode(username) << "&password=" << Utils::UrlEncode(password) << "&format=json";
-  string jsonString = HttpPost("http://zattoo.com/zapi/account/login", dataStream.str(), true);
+  string jsonString = HttpPost("https://zattoo.com/zapi/account/login", dataStream.str(), true);
 
   yajl_val json = JsonParser::parse(jsonString);
 
@@ -291,7 +291,7 @@ bool ZatData::login() {
 
 bool ZatData::initSession() {
   getUUID();
-  string jsonString = HttpGet("http://zattoo.com/zapi/v2/session", true);
+  string jsonString = HttpGet("https://zattoo.com/zapi/v2/session", true);
   yajl_val json = JsonParser::parse(jsonString);
   if(json == NULL || !JsonParser::getBoolean(json, 1, "success")) {
     yajl_tree_free(json);
@@ -314,7 +314,7 @@ bool ZatData::initSession() {
     if (!login()) {
       return false;
     }
-    jsonString = HttpGet("http://zattoo.com/zapi/v2/session", true);
+    jsonString = HttpGet("https://zattoo.com/zapi/v2/session", true);
     json = JsonParser::parse(jsonString);
     if (json == NULL || !JsonParser::getBoolean(json, 1, "success") || !JsonParser::getBoolean(json, 2, "session" , "loggedin")) {
       yajl_tree_free(json);
@@ -339,7 +339,7 @@ bool ZatData::initSession() {
 
 yajl_val ZatData::loadFavourites() {
 
-    string jsonString = HttpGet("http://zattoo.com/zapi/channels/favorites");
+    string jsonString = HttpGet("https://zattoo.com/zapi/channels/favorites");
     yajl_val json = JsonParser::parse(jsonString);
     
     if (json == NULL || !JsonParser::getBoolean(json, 1, "success")){
@@ -362,7 +362,7 @@ bool ZatData::LoadChannels() {
     yajl_val favs = JsonParser::getArray(favsJson, 1, "favorites");
 
     ostringstream urlStream;
-    urlStream << "http://zattoo.com/zapi/v2/cached/channels/" << powerHash << "?details=False";
+    urlStream << "https://zattoo.com/zapi/v2/cached/channels/" << powerHash << "?details=False";
     string jsonString = HttpGet(urlStream.str());
 
     yajl_val json = JsonParser::parse(jsonString);
@@ -397,7 +397,7 @@ bool ZatData::LoadChannels() {
                     channel.iUniqueId = GetChannelId(cid.c_str());
                     channel.cid = cid;
                     channel.iChannelNumber = ++channelNumber;
-                    channel.strLogoPath = "http://logos.zattic.com";
+                    channel.strLogoPath = "https://logos.zattic.com";
                     channel.strLogoPath.append(JsonParser::getString(qualityItem, 1, "logo_white_84"));
                     group.channels.insert(group.channels.end(), channel);
                     allChannels[cid] = channel;
@@ -606,7 +606,7 @@ std::string ZatData::GetChannelStreamUrl(int uniqueId) {
     ostringstream dataStream;
     dataStream << "cid=" << channel->cid << "&stream_type=" << streamType << "&format=json";
 
-    string jsonString = HttpPost("http://zattoo.com/zapi/watch", dataStream.str());
+    string jsonString = HttpPost("https://zattoo.com/zapi/watch", dataStream.str());
 
     yajl_val json = JsonParser::parse(jsonString);
     if (json == NULL || !JsonParser::getBoolean(json, 1, "success")){
@@ -723,7 +723,7 @@ bool ZatData::LoadEPG(time_t iStart, time_t iEnd) {
 
     while(tempEnd <= iEnd) {
         ostringstream urlStream;
-        urlStream << "http://zattoo.com/zapi/v2/cached/program/power_guide/" << powerHash << "?end=" << tempEnd << "&start=" << tempStart << "&format=json";
+        urlStream << "https://zattoo.com/zapi/v2/cached/program/power_guide/" << powerHash << "?end=" << tempEnd << "&start=" << tempStart << "&format=json";
 
         string jsonString = HttpGet(urlStream.str());
 
@@ -821,7 +821,7 @@ int ZatData::GetRecordingLastPlayedPosition(const PVR_RECORDING &recording) {
 }
 
 void ZatData::GetRecordings(ADDON_HANDLE handle, bool future) {
-  string jsonString = HttpGet("http://zattoo.com/zapi/playlist");
+  string jsonString = HttpGet("https://zattoo.com/zapi/playlist");
 
   yajl_val json = JsonParser::parse(jsonString);
   
@@ -839,7 +839,7 @@ void ZatData::GetRecordings(ADDON_HANDLE handle, bool future) {
     yajl_val recording = recordings->u.array.values[index];
     int programId = JsonParser::getInt(recording, 1, "program_id");
     ostringstream urlStream;
-    urlStream << "http://zattoo.com/zapi/program/details?program_id=" << programId;
+    urlStream << "https://zattoo.com/zapi/program/details?program_id=" << programId;
     jsonString = HttpGet(urlStream.str());
     yajl_val detailJson = JsonParser::parse(jsonString);
 
@@ -920,7 +920,7 @@ void ZatData::GetRecordings(ADDON_HANDLE handle, bool future) {
 }
 
 int ZatData::GetRecordingsAmount(bool future) {
-  string jsonString = HttpGet("http://zattoo.com/zapi/playlist");
+  string jsonString = HttpGet("https://zattoo.com/zapi/playlist");
 
   time_t current_time;
   time(&current_time);
@@ -950,7 +950,7 @@ std::string ZatData::GetRecordingStreamUrl(string recordingId) {
     ostringstream dataStream;
     dataStream << "recording_id=" << recordingId <<"&stream_type=" << streamType;
 
-    string jsonString = HttpPost("http://zattoo.com/zapi/watch", dataStream.str());
+    string jsonString = HttpPost("https://zattoo.com/zapi/watch", dataStream.str());
 
     yajl_val json = JsonParser::parse(jsonString);
     
@@ -969,7 +969,7 @@ bool ZatData::Record(int programId) {
   ostringstream dataStream;
   dataStream << "program_id=" << programId;
 
-  string jsonString = HttpPost("http://zattoo.com/zapi/playlist/program", dataStream.str());
+  string jsonString = HttpPost("https://zattoo.com/zapi/playlist/program", dataStream.str());
   yajl_val json = JsonParser::parse(jsonString);
   bool ret = json != NULL && JsonParser::getBoolean(json, 1, "success");
   yajl_tree_free(json);
@@ -980,7 +980,7 @@ bool ZatData::DeleteRecording(string recordingId) {
   ostringstream dataStream;
   dataStream << "recording_id=" << recordingId <<"";
 
-  string jsonString = HttpPost("http://zattoo.com/zapi/playlist/remove", dataStream.str());
+  string jsonString = HttpPost("https://zattoo.com/zapi/playlist/remove", dataStream.str());
 
   yajl_val json = JsonParser::parse(jsonString);
   bool ret = json != NULL && JsonParser::getBoolean(json, 1, "success");
@@ -1007,7 +1007,7 @@ string ZatData::GetEpgTagUrl(const EPG_TAG &tag) {
 
   dataStream << "cid=" << channel.cid << "&start=" << timeStart << "&end=" << timeEnd << "&stream_type=" << streamType;
 
-  string jsonString = HttpPost("http://zattoo.com/zapi/watch", dataStream.str());
+  string jsonString = HttpPost("https://zattoo.com/zapi/watch", dataStream.str());
 
   yajl_val json = JsonParser::parse(jsonString);
   string url = JsonParser::getString(json, 2, "stream", "url");
