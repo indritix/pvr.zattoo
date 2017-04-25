@@ -182,7 +182,7 @@ bool HTTPSocket::Execute(Request &request, Response &response)
 }
 
 HTTPSocketRaw::HTTPSocketRaw(uint32_t iTimeout)
-        : HTTPSocket(iTimeout), m_port(80), m_socket(NULL)
+        : HTTPSocket(iTimeout), m_port(443), m_socket(NULL)
 {
     // set minimum timeout
     m_iTimeout = std::max(MINIMUM_TIMEOUT, (const int) m_iTimeout);
@@ -205,7 +205,7 @@ void HTTPSocketRaw::BuildRequestString(Request &request, std::string &strRequest
     strMethod = "GET";
     strUri = "/";
     m_host = request.url;
-    m_port = 80;
+    m_port = 443;
 
     switch (request.method) {
         case GET:
