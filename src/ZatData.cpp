@@ -193,7 +193,7 @@ bool ZatData::loadAppId() {
     return false;
   }
 
-  XBMC->Log(LOG_DEBUG, "Loaded App token %s", XBMC->UnknownToUTF8(appToken.c_str()));
+  XBMC->Log(LOG_DEBUG, "Loaded App token %s", appToken.c_str());
   return true;
 
 }
@@ -418,6 +418,9 @@ ZatData::~ZatData() {
     updateThread->StopThread(1000);
     delete updateThread;
   }
+  for (auto const& item : recordingsData) {
+    delete item.second;
+  }
   channelGroups.clear();
   delete curl;
 }
@@ -556,6 +559,10 @@ std::string ZatData::GetChannelStreamUrl(int uniqueId) {
 
     ostringstream dataStream;
     dataStream << "cid=" << channel->cid << "&stream_type=" << streamType << "&format=json";
+
+    if (recallEnabled) {
+      dataStream << "&timeshift=" << maxRecallSeconds;
+    }
 
     string jsonString = HttpPost(zattooServer + "/zapi/watch", dataStream.str());
 
