@@ -1,3 +1,5 @@
+v0.2.9
+ - Merge v0.1.30
 v0.2.8
  - Fix error upon installation without settings
 v0.2.7
@@ -21,6 +23,11 @@ v0.2.0
  - Enable recording of past shows
  - Enable RePlay-TV
  - Please note that this version requires a patched version of Kodi v17
+v0.1.30
+ - Fix error upon installation without settings
+ - Fix memory leaks
+ - Remove some unused code
+ - Sync code with zattoo_dash branch where possible
 v0.1.29
  - Use libcurl to support https
 v0.1.28

@@ -446,10 +446,6 @@ void ZatData::GetAddonCapabilities(PVR_ADDON_CAPABILITIES* pCapabilities) {
   pCapabilities->bSupportsTimers          = recordingEnabled;
 }
 
-void *ZatData::Process(void) {
-    return NULL;
-}
-
 PVR_ERROR ZatData::GetChannelGroups(ADDON_HANDLE handle) {
     std::vector<PVRZattooChannelGroup>::iterator it;
     for (it = channelGroups.begin(); it != channelGroups.end(); ++it)
@@ -619,9 +615,10 @@ PVR_ERROR ZatData::GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL &chan
 
 
     std::vector<PVRIptvEpgEntry>::iterator it;
-    for (it = zatChannel->epg.begin(); it != zatChannel->epg.end(); ++it)
+    while (!zatChannel->epg.empty())
     {
-        PVRIptvEpgEntry &epgEntry = (*it);
+        PVRIptvEpgEntry &epgEntry = zatChannel->epg.back();
+        zatChannel->epg.pop_back();
 
         EPG_TAG tag;
         memset(&tag, 0, sizeof(EPG_TAG));
@@ -723,8 +720,7 @@ bool ZatData::LoadEPG(time_t iStart, time_t iEnd) {
                     break;
                 }
 
-                if (channel)
-                    channel->epg.insert(channel->epg.end(), entry);
+                channel->epg.insert(channel->epg.end(), entry);
             }
         }
         yajl_tree_free(json);
