@@ -1,3 +1,5 @@
+v0.2.10
+ - Merge v0.1.31
 v0.2.9
  - Merge v0.1.30
 v0.2.8
@@ -23,6 +25,8 @@ v0.2.0
  - Enable recording of past shows
  - Enable RePlay-TV
  - Please note that this version requires a patched version of Kodi v17
+v0.1.31
+ - Refactor epg cache to solve memory issue
 v0.1.30
  - Fix error upon installation without settings
  - Fix memory leaks
