@@ -4,11 +4,13 @@
   version="0.2.10"
   name="Zattoo PVR Client"
   provider-name="trummerjo,rbuehlma">
-#	<requires>
-#    <c-pluff version="0.1"/>
+	<requires>
+    <c-pluff version="0.1"/>
+<import addon="kodi.global.main" version="@ADDON_GLOBAL_VERSION_MAIN@"/>
+<import addon="kodi.instance.pvr" version="@ADDON_INSTANCE_VERSION_PVR@"/>
 #    <import addon="kodi.instance.pvr" version="@ADDON_INSTANCE_VERSION_PVR@"/>
-#  </requires>
-  <requires>@ADDON_DEPENDS@</requires>
+  </requires>
+#  <requires>@ADDON_DEPENDS@</requires>
   <extension
     point="xbmc.pvrclient"
     library_@PLATFORM@="@LIBRARY_FILENAME@"/>
