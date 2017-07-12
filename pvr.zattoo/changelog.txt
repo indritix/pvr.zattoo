@@ -1,3 +1,8 @@
+v18.0.0
+ - Initial support for Kodi 18 Leia
+ - Added minimalistic support for PVR Addon API 5.3.0
+v0.2.11
+ - Merge v0.1.32
 v0.2.10
  - Merge v0.1.31
 v0.2.9
@@ -25,6 +30,8 @@ v0.2.0
  - Enable recording of past shows
  - Enable RePlay-TV
  - Please note that this version requires a patched version of Kodi v17
+v0.1.32
+ - Implement alternative EPG service to speed up and include description
 v0.1.31
  - Refactor epg cache to solve memory issue
 v0.1.30

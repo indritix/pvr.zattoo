@@ -36,6 +36,7 @@ CHelper_libXBMC_pvr   *PVR  = NULL;
 std::string zatUsername    = "";
 std::string zatPassword    = "";
 bool      zatFavoritesOnly = false;
+bool      zatAlternativeEpgService = false;
 int         g_iStartNumber  = 1;
 bool        g_bTSOverride   = true;
 bool        g_bCacheM3U     = false;
@@ -85,6 +86,10 @@ void ADDON_ReadSettings(void) {
     {
         zatFavoritesOnly = boolBuffer;
     }
+    if (XBMC->GetSetting("alternativeepgservice", &boolBuffer))
+    {
+      zatAlternativeEpgService = boolBuffer;
+    }
     XBMC->Log(LOG_DEBUG, "End Readsettings");
 }
 
@@ -124,7 +129,7 @@ ADDON_STATUS ADDON_Create(void *hdl, void *props) {
     ADDON_ReadSettings();
     if (!zatUsername.empty() && !zatPassword.empty()) {
       XBMC->Log(LOG_DEBUG, "Create Zat");
-      zat = new ZatData(zatUsername, zatPassword, zatFavoritesOnly);
+      zat = new ZatData(zatUsername, zatPassword, zatFavoritesOnly, zatAlternativeEpgService);
       XBMC->Log(LOG_DEBUG, "Zat created");
       if (zat->Initialize() && zat->LoadChannels()) {
         m_CurStatus = ADDON_STATUS_OK;
@@ -143,14 +148,6 @@ ADDON_STATUS ADDON_GetStatus() {
 void ADDON_Destroy() {
   SAFE_DELETE(zat);
   m_CurStatus = ADDON_STATUS_UNKNOWN;
-}
-
-bool ADDON_HasSettings() {
-    return true;
-}
-
-unsigned int ADDON_GetSettings(ADDON_StructSetting ***sSet) {
-    return 0;
 }
 
 ADDON_STATUS ADDON_SetSetting(const char *settingName, const void *settingValue) {
@@ -185,8 +182,6 @@ ADDON_STATUS ADDON_SetSetting(const char *settingName, const void *settingValue)
 void ADDON_Stop() {
 }
 
-void ADDON_FreeSettings() {
-}
 
 /***********************************************************
  * PVR Client AddOn specific public library functions
@@ -209,29 +204,6 @@ void OnPowerSavingDeactivated()
 {
 }
 
-const char* GetPVRAPIVersion(void)
-{
-  static const char *strApiVersion = XBMC_PVR_API_VERSION;
-  return strApiVersion;
-}
-
-const char* GetMininumPVRAPIVersion(void)
-{
-
-  static const char *strMinApiVersion = XBMC_PVR_MIN_API_VERSION;
-  return strMinApiVersion;
-}
-
-const char* GetGUIAPIVersion(void)
-{
-    return KODI_GUILIB_API_VERSION;
-}
-
-const char* GetMininumGUIAPIVersion(void)
-{
-    return KODI_GUILIB_MIN_API_VERSION;
-}
-
 PVR_ERROR GetAddonCapabilities(PVR_ADDON_CAPABILITIES* pCapabilities)
 {
   pCapabilities->bSupportsEPG             = true;
@@ -240,6 +212,9 @@ PVR_ERROR GetAddonCapabilities(PVR_ADDON_CAPABILITIES* pCapabilities)
   pCapabilities->bSupportsChannelGroups   = true;
   pCapabilities->bSupportsRecordingPlayCount = true;
   pCapabilities->bSupportsLastPlayedPosition = true;
+  pCapabilities->bSupportsRecordingsRename = true;
+  pCapabilities->bSupportsRecordingsLifetimeChange = false;
+  pCapabilities->bSupportsDescrambleInfo = false;
 
   if (zat) {
     zat->GetAddonCapabilities(pCapabilities);
@@ -256,7 +231,7 @@ const char *GetBackendName(void)
 
 const char *GetBackendVersion(void)
 {
-  static std::string strBackendVersion = XBMC_PVR_API_VERSION;
+  static std::string strBackendVersion = STR(IPTV_VERSION);
   return strBackendVersion.c_str();
 }
 
@@ -484,7 +459,7 @@ bool IsPlayable(const EPG_TAG &tag) {
   return zat->IsPlayable(tag);
 }
 
-int GetEpgTagUrl(const EPG_TAG &tag, char *url, int urlLen) {
+int GetEpgTagUrl(const EPG_TAG &tag, char *url, int urlLen, const CStringPropertyMapPtr& properties) {
   if (!zat) {
     return -1;
   }
@@ -492,6 +467,10 @@ int GetEpgTagUrl(const EPG_TAG &tag, char *url, int urlLen) {
   time(&g_pvrZattooTimeShift);
   g_pvrZattooTimeShift -= tag.startTime;
   strncpy(url, strUrl.c_str(), urlLen);
+
+  properties->insert(std::make_pair("inputstreamaddon", "inputstream.adaptive"));
+  properties->insert(std::make_pair("inputstream.adaptive.manifest_type", "mpd"));
+
   return urlLen;
 }
 
@@ -563,5 +542,7 @@ time_t GetBufferTimeEnd() { return 0; }
 PVR_ERROR UndeleteRecording(const PVR_RECORDING& recording) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR DeleteAllRecordingsFromTrash() { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR SetEPGTimeFrame(int) { return PVR_ERROR_NOT_IMPLEMENTED; }
+PVR_ERROR GetDescrambleInfo(PVR_DESCRAMBLE_INFO*) { return PVR_ERROR_NOT_IMPLEMENTED; }
+PVR_ERROR SetRecordingLifetime(const PVR_RECORDING*) { return PVR_ERROR_NOT_IMPLEMENTED; }
 
 }
