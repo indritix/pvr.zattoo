@@ -481,19 +481,17 @@ bool IsPlayable(const EPG_TAG &tag) {
   return zat->IsPlayable(tag);
 }
 
-int GetEpgTagUrl(const EPG_TAG &tag, char *url, int urlLen, const CStringPropertyMapPtr& properties) {
-  if (!zat) {
-    return -1;
+PVR_ERROR GetEpgTagStreamURL(const EPG_TAG* tag, char* url, unsigned int* urlLen, PVR_STREAM_URL_PROPERTY* properties, unsigned int* propertiesCount)  {
+  std::string strUrl =  zat->GetEpgTagUrl(tag);
+  if (strUrl.empty()) {
+    return PVR_ERROR_FAILED;
   }
-  string strUrl = zat->GetEpgTagUrl(tag);
-  time(&g_pvrZattooTimeShift);
-  g_pvrZattooTimeShift -= tag.startTime;
-  strncpy(url, strUrl.c_str(), urlLen);
-
-  properties->insert(std::make_pair("inputstreamaddon", "inputstream.adaptive"));
-  properties->insert(std::make_pair("inputstream.adaptive.manifest_type", "mpd"));
-
-  return urlLen;
+  if (strUrl.size() < (*urlLen)) {
+    *urlLen = strUrl.size();
+  }
+  setStreamProperties(properties, propertiesCount);
+  memcpy(url, strUrl.c_str(), *urlLen);
+  return PVR_ERROR_NO_ERROR;
 }
 
 PVR_ERROR SetRecordingPlayCount(const PVR_RECORDING &recording, int count) {
