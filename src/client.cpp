@@ -112,7 +112,8 @@ ADDON_STATUS ADDON_Create(void *hdl, void *props)
     if (zat->Initialize() && zat->LoadChannels())
     {
       m_CurStatus = ADDON_STATUS_OK;
-    } else
+    }
+    else
     {
       XBMC->QueueNotification(QUEUE_ERROR, XBMC->GetLocalizedString(37111));
     }
@@ -248,7 +249,10 @@ PVR_ERROR GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL &channel,
     time_t iStart, time_t iEnd)
 {
   if (zat)
-    return zat->GetEPGForChannel(handle, channel, iStart, iEnd);
+  {
+    zat->GetEPGForChannel(channel, iStart, iEnd);
+    return PVR_ERROR_NO_ERROR;
+  }
 
   return PVR_ERROR_SERVER_ERROR;
 }
