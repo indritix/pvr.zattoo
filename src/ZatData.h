@@ -102,15 +102,16 @@ public:
   virtual bool IsPlayable(const EPG_TAG *tag);
   virtual bool IsRecordable(const EPG_TAG *tag);
   virtual string GetEpgTagUrl(const EPG_TAG *tag);
+  virtual bool RecordingEnabled() { return recordingEnabled; }
 
 private:
   int m_iLastStart;
   int m_iLastEnd;
   string appToken;
   string powerHash;
-  string countryCode;
-  bool recallEnabled;
-  bool recordingEnabled;
+  string countryCode = "";
+  bool recallEnabled = false;
+  bool recordingEnabled = false;
   string streamType;
   string username;
   string password;
@@ -121,7 +122,7 @@ private:
   map<string, ZatChannel> channelsByCid;
   map<string, ZatRecordingData*> recordingsData;
   map<string, map<time_t, PVRIptvEpgEntry>*> epgCache;
-  int64_t maxRecallSeconds;
+  int64_t maxRecallSeconds = 0;
   Curl *curl;
   UpdateThread *updateThread;
   string uuid;
